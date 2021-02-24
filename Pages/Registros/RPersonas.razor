@@ -1,0 +1,156 @@
+﻿<h3>RPersonas</h3>
+
+@page "/Personas"
+@page "/Personas/{PersonaId:int}"
+@inject IToastService toast
+
+<EditForm Model="Persona" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <div class="card">
+        <div class="card-header">
+            <h3>Registro Personas</h3>
+        </div>
+
+        <div class="card-body">
+            <form>
+
+                <div class="form-row align-items-center">
+                    <div class="col">
+                        <div class="form-group">
+                            <label>Persona Id </label>
+                            <div class="input-group">
+                                <InputNumber @bind-Value="this.PersonaId" class="form-control" />
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-primary input-group-text" style="z-index:0" @onclick="Buscar">Buscar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label>Nombres</label>
+                    <InputText @bind-Value="Persona.Nombres" class="form-control" />
+                    <ValidationMessage For="(() => Persona.Nombres)" />
+                </div>
+
+
+                <div class="form-group">
+                    <label>Fecha Nacimiento</label>
+                    <InputDate @bind-Value="Persona.FechaNacimiento" class="form-control" />
+                    <ValidationMessage For="(() => Persona.FechaNacimiento)" />
+                </div>
+
+
+                <div class="form-group">
+                    <label>Teléfono</label>
+                    <InputText @bind-Value="Persona.Telefono" class="form-control" />
+                    <ValidationMessage For="(() => Persona.Telefono)" />
+                </div>
+
+
+                <div class="form-group">
+                    <label>Dirección</label>
+                    <InputText @bind-Value="Persona.Direccion" class="form-control" />
+                    <ValidationMessage For="(() => Persona.Direccion)" />
+                </div>
+
+
+                <div class="form-group">
+                    <label>Balance</label>
+                    <InputNumber @bind-Value="Persona.Balance" class="form-control" readonly/>
+                </div>
+            </form>
+        </div>
+
+        <div class="card-footer">
+            <div class="form-group text-center">
+                <button type="button" class="btn btn-primary" @onclick="Nuevo" style="margin: 5px">Nuevo</button>
+                <button type="submit" class="btn btn-success" style="margin: 5px">Guardar</button>
+                <button type="button" class="btn btn-danger" @onclick="Eliminar" style="margin: 5px">Eliminar</button>
+            </div>
+        </div>
+
+    </div>
+</EditForm>
+
+
+@code {
+
+    string Mensaje = string.Empty;
+
+    [Inject]
+    private PersonasBLL personasBLL { get; set; }
+
+    [Parameter]
+    public int PersonaId { get; set; }
+
+    Personas Persona = new Personas();
+
+    protected override void OnInitialized()
+    {
+        Nuevo();
+    }
+
+
+    public async void Buscar()
+    {
+        var registro = await personasBLL.Buscar(this.PersonaId);
+
+        if (registro != null)
+        {
+            Persona = registro;
+
+        }
+        else
+        {
+            Mensaje = "pudo ser encontrado.";
+        }
+    }
+
+    public void Nuevo()
+    {
+        Limpiar();
+    }
+
+    public async void Guardar()
+    {
+        Persona.PersonaId = this.PersonaId;
+        if (await personasBLL.Guardar(Persona))
+        {
+
+            Mensaje = ("Guardado");
+            Limpiar();
+
+        }
+        else
+        {
+            Mensaje = ("no pudo ser guardado.");
+
+        }
+    }
+
+    public async void Eliminar()
+    {
+        if (await personasBLL.Eliminar(this.PersonaId))
+        {
+            Mensaje = ("Eliminado");
+            Limpiar();
+        }
+        else
+        {
+            Mensaje = ("no pudo ser eliminado.");
+
+        }
+    }
+
+    public void Limpiar()
+    {
+        Persona = new Personas();
+        this.PersonaId = 0;
+    }
+
+
+}
+

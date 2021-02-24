@@ -1,0 +1,161 @@
+﻿<h3>RPrestamos</h3>
+
+@page "/Prestamos"
+@page "/Prestamos/{PrestamoId:int}"
+
+<EditForm Model="Prestamo" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <div class="card">
+        <div class="card-header">
+            <h3>Registro  Prestamo</h3>
+        </div>
+
+        <div class="card-body">
+            <form>
+                <div class="form-row align-items-center">
+                    <div class="col">
+                        <div class="form-group">
+                            <label>Prestamo Id</label>
+                            <div class="input-group">
+                                <InputNumber @bind-Value="this.PrestamoId" class="form-control col-3 " />
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-primary input-group-text" style="z-index:0" @onclick="Buscar">Buscar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label>Persona</label>
+                    <InputSelect @bind-Value="Prestamo.PersonaId" class="form-control">
+                        @foreach (var item in lista)
+                        {
+                            <option value="@item.PersonaId">@item.Nombres</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="(() => Prestamo.PersonaId)" />
+                </div>
+
+
+                <div class="form-group">
+                    <label>Fecha</label>
+                    <InputDate @bind-Value="Prestamo.Fecha" class="form-control"/>
+                </div>
+
+
+                <div class="form-group">
+                    <label>Descripcion</label>
+                    <InputTextArea @bind-Value="Prestamo.Descripcion" class="form-control"/>
+                    <ValidationMessage For="(() => Prestamo.Descripcion)" />
+                </div>
+
+                <div class="form-group">
+                    <label>Monto</label>
+                    <InputNumber @bind-Value="Prestamo.Monto" class="form-control" @onfocus="ObtenerBalance" @onfocusout="ObtenerBalance" @oninput="ObtenerBalance" />
+                    <ValidationMessage For="(() => Prestamo.Monto)" />
+                </div>
+
+                <div class="form-group">
+                    <label>Balance</label>
+                    <InputNumber @bind-Value="Prestamo.Balance" class="form-control"/>
+                </div>
+
+            </form>
+        </div>
+
+        <div class="card-footer">
+            <div class="form-group text-center">
+                <button type="button" class="btn btn-primary" @onclick="Nuevo" style="margin: 5px">Nuevo</button>
+                <button type="submit" class="btn btn-success" style="margin: 5px">Guardar</button>
+                <button type="button" class="btn btn-danger" @onclick="Eliminar" style="margin: 5px">Eliminar</button>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+
+    string Mensaje = string.Empty;
+
+    [Inject]
+    private PersonasBLL personasBLL { get; set; }
+    private PrestamosBLL prestamosBLL { get; set; }
+
+    [Parameter]
+    public int PrestamoId { get; set; }
+
+    Personas personas = new Personas();
+
+    Prestamos Prestamo = new Prestamos();
+    List<Personas> lista = new List<Personas>();
+    public int PersonaSeleccionada { get; set; }
+
+
+    protected override async void OnInitialized()
+    {
+        Nuevo();
+        lista = await personasBLL.GetPersonas();
+    }
+
+
+    public async void Buscar()
+    {
+        var registro = await prestamosBLL.Buscar(this.PrestamoId);
+
+        if (registro != null)
+        {
+            Prestamo = registro;
+        }
+        else
+        {
+            Mensaje = ("No se pudo encontrar.");
+        }
+    }
+
+    public void Nuevo()
+    {
+        Limpiar();
+    }
+
+    public async void Guardar()
+    {
+        Prestamo.PrestamoId = this.PrestamoId;
+        if (await prestamosBLL.Guardar(Prestamo))
+        {
+            Mensaje = ("Guardado");
+            Limpiar();
+        }
+        else
+        {
+            Mensaje = ("No pudo ser guardado.");
+        }
+    }
+
+    public async void Eliminar()
+    {
+        if (await prestamosBLL.Eliminar(this.PrestamoId))
+        {
+            Mensaje = ("Eliminado");
+            Limpiar();
+        }
+        else
+        {
+            Mensaje = ("No udo ser eliminado.");
+        }
+    }
+
+    public void Limpiar()
+    {
+        Prestamo = new Prestamos();
+        this.PrestamoId = 0;
+    }
+
+    private void ObtenerBalance()
+    {
+
+        Prestamo.Balance = Prestamo.Monto;
+    }
+
+}

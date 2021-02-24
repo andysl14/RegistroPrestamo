@@ -1,10 +1,14 @@
+using Blazored.Toast;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using RegistroPrestamo.BLL;
+using RegistroPrestamo.DAL;
 using RegistroPrestamo.Data;
 using System;
 using System.Collections.Generic;
@@ -29,6 +33,13 @@ namespace RegistroPrestamo
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddSingleton<WeatherForecastService>();
+            services.AddDbContext<Contexto>(options =>
+            options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddBlazoredToast();
+
+            //Inyeccion de las BLL
+            services.AddTransient<PersonasBLL>();
+            services.AddTransient<PrestamosBLL>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

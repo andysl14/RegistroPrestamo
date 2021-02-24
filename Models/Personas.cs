@@ -20,6 +20,6 @@ namespace RegistroPrestamo.Models
 
         [Required(ErrorMessage = "Es obligado agregar una fecha de nacimiento")]
         public DateTime FechaNacimiento { get; set; } = DateTime.Now;
-        //public double Balance { get; set; }
+        public double Balance { get; set; }
     }
 }

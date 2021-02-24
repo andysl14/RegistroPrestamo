@@ -12,21 +12,44 @@
                 <span class="oi oi-home" aria-hidden="true"></span> Home
             </NavLink>
         </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="oi oi-plus" aria-hidden="true"></span> Counter
+
+        
+        <li class="nav-item px-3 dropdown show">
+            <NavLink class="nav-link  dropdown-toggle" href="" @onclick="() =>expandSubMenu = !expandSubMenu">
+                <span class=" oi oi-folder" aria-hidden="true"></span> Registros
             </NavLink>
+
+            @if (expandSubMenu)
+            {
+                <ul class="nav flex-column">
+                    <li class="nav-item px-2">
+                        <NavLink class="nav-link" href="Personas">
+                            <span class=" oi oi-person px-1" aria-hidden="true"></span> Registrar Personas
+                        </NavLink>
+                    </li>
+
+                    <li class="nav-item px-2">
+                        <NavLink class="nav-link" href="Prestamos">
+                            <span class=" oi oi-dollar px-2" aria-hidden="true"></span> Registrar Prestamos
+                        </NavLink>
+                    </li>
+
+                    <li class="nav-item px-2">
+                        <NavLink class="nav-link" href="Moras">
+                            <span class=" oi oi-dollar px-2" aria-hidden="true"></span> Registrar Moras
+                        </NavLink>
+                    </li>
+                </ul>
+            }
+
         </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="fetchdata">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
-            </NavLink>
-        </li>
+
     </ul>
 </div>
 
 @code {
     private bool collapseNavMenu = true;
+    private bool expandSubMenu;
 
     private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
